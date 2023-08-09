@@ -30,6 +30,7 @@ class UserService {
     if (deletedUser) {
       return user;
     }
+    return null;
   };
 }
 

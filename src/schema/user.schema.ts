@@ -1,8 +1,10 @@
 import { getModelForClass, index, pre, prop } from "@typegoose/typegoose";
 import { IsEmail, MinLength } from "class-validator";
-import { Field, InputType, ObjectType } from "type-graphql";
+import { Field, InputType, ObjectType, registerEnumType } from "type-graphql";
 import bcrypt from "bcrypt";
 import { errorMsgs } from "../constant";
+import { ObjectId } from "mongoose";
+import { Phone } from "../enum";
 
 @pre<User>("save", async function () {
   if (!this.isModified("password")) {
@@ -18,15 +20,31 @@ import { errorMsgs } from "../constant";
 @ObjectType()
 export class User {
   @Field(() => String)
-  _id: string;
+  _id: ObjectId;
 
   @Field(() => String)
   @prop({ required: true })
   name: string;
 
   @Field(() => String)
-  @prop({ required: true })
+  @prop({ required: true, unique: true })
   email: string;
+
+  @Field(() => Number)
+  @prop({ required: true })
+  age: number;
+
+  @Field(() => Boolean, { nullable: true })
+  @prop()
+  eligibleToVote?: boolean;
+
+  @Field(() => Phone)
+  @prop({ required: true })
+  phoneBrand: Phone;
+
+  @Field(() => String)
+  @prop({ required: true })
+  role: string;
 
   @prop({ required: true })
   password: string;
@@ -48,6 +66,15 @@ export class CreateUserInput {
   })
   @Field(() => String)
   password: string;
+
+  @Field(() => String)
+  role: string;
+
+  @Field(() => Phone)
+  phoneBrand: Phone;
+
+  @Field(() => Number)
+  age: number;
 }
 
 @InputType()
