@@ -15,10 +15,12 @@ import {
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import cookieParser from "cookie-parser";
+import { authChecker } from "./authorization";
 
 const bootstrap = async () => {
   const schema = await buildSchema({
     resolvers,
+    authChecker,
     emitSchemaFile: path.resolve(__dirname, "schema.gql"),
   });
 
@@ -33,6 +35,14 @@ const bootstrap = async () => {
 
   const server = new ApolloServer({
     schema,
+    context: ({ req }) => {
+      const context = {
+        req,
+        user: req.body.variables.input,
+      };
+      return context;
+    },
+    introspection: true,
     csrfPrevention: true,
     cache: "bounded",
     plugins: [

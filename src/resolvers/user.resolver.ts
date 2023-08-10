@@ -1,5 +1,6 @@
 import {
   Arg,
+  Authorized,
   FieldResolver,
   Mutation,
   PubSub,
@@ -36,7 +37,9 @@ export default class UserResolver {
     await UserModel.findByIdAndUpdate(user._id, { eligibleToVote: false });
     return false;
   }
-  @UseMiddleware(LogAccessMiddleware)
+
+  @Authorized("User")
+  // @UseMiddleware(LogAccessMiddleware)
   @Mutation(() => User)
   async createUser(
     @Arg("input") input: CreateUserInput,
@@ -52,6 +55,27 @@ export default class UserResolver {
       message: `The created user's name is ${createdUser.name} and email id is ${createdUser.email} `,
     };
     await pubSub.publish("NOTIFICATIONS", payload);
+
+    return createdUser;
+  }
+
+  @Authorized("Admin")
+  // @UseMiddleware(LogAccessMiddleware)
+  @Mutation(() => User)
+  async createAdmin(
+    @Arg("input") input: CreateUserInput,
+    @PubSub() pubSub: PubSubEngine
+  ) {
+    const createdUser = await this.userService.createUser(input);
+    const { _id, name } = createdUser;
+
+    const payload: NotificationPayload = {
+      command: "create",
+      id: _id,
+      name,
+      message: `The created admin's name is ${createdUser.name} and email id is ${createdUser.email} `,
+    };
+    await pubSub.publish("ADMINNOTIFICATIONS", payload);
 
     return createdUser;
   }
@@ -80,7 +104,7 @@ export default class UserResolver {
     }
   }
   @Subscription({
-    topics: ["NOTIFICATIONS", "DELETENOTIFICATIONS"],
+    topics: ["NOTIFICATIONS", "DELETENOTIFICATIONS", "ADMINNOTIFICATIONS"],
     filter: ({ payload }: ResolverFilterData<NotificationPayload>) =>
       payload.name === "Mihir",
   })

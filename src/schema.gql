@@ -19,6 +19,7 @@ scalar DateTime
 
 type Mutation {
   DeleteUser(input: findUserInput!): User!
+  createAdmin(input: CreateUserInput!): User!
   createUser(input: CreateUserInput!): User!
   findUser(input: findUserInput!): User!
 }
@@ -52,7 +53,7 @@ type User {
   email: String!
   name: String!
   phoneBrand: Phone!
-  role: String!
+  role: String
 }
 
 input findUserInput {

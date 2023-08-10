@@ -11,7 +11,10 @@ export class LogAccessMiddleware implements MiddlewareInterface<Context> {
   constructor() {}
 
   async use({ context }: ResolverData<Context>, next: NextFn) {
-    console.log(context);
+    console.log(
+      "🚀 ~ file: middleware.ts:14 ~ LogAccessMiddleware ~ use ~ context:",
+      context.user
+    );
     return next();
   }
 }

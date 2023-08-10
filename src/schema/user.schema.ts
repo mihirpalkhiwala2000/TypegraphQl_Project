@@ -1,6 +1,12 @@
 import { getModelForClass, index, pre, prop } from "@typegoose/typegoose";
 import { IsEmail, MinLength } from "class-validator";
-import { Field, InputType, ObjectType, registerEnumType } from "type-graphql";
+import {
+  Authorized,
+  Field,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from "type-graphql";
 import bcrypt from "bcrypt";
 import { errorMsgs } from "../constant";
 import { ObjectId } from "mongoose";
@@ -42,9 +48,10 @@ export class User {
   @prop({ required: true })
   phoneBrand: Phone;
 
-  @Field(() => String)
-  @prop({ required: true })
-  role: string;
+  @Authorized("Admin")
+  @Field(() => String, { nullable: true })
+  @prop()
+  role?: string;
 
   @prop({ required: true })
   password: string;
@@ -68,7 +75,7 @@ export class CreateUserInput {
   password: string;
 
   @Field(() => String)
-  role: string;
+  role?: string;
 
   @Field(() => Phone)
   phoneBrand: Phone;
