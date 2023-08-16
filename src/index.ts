@@ -35,39 +35,42 @@ const bootstrap = async () => {
 
   const server = new ApolloServer({
     schema,
-    context: ({ req }) => {
-      const context = {
-        req,
-        user: req.body.variables.input,
-      };
-      return context;
-    },
-    introspection: true,
-    csrfPrevention: true,
-    cache: "bounded",
-    plugins: [
-      ApolloServerPluginDrainHttpServer({ httpServer }),
+    // context: ({ req }) => {
+    //   const context = {
+    //     req,
+    //     user: req.body.variables.input,
+    //   };
+    //   return context;
+    // },
+    // introspection: true,
+    // csrfPrevention: true,
+    // cache: "bounded",
+    // plugins: [
+    //   ApolloServerPluginDrainHttpServer({ httpServer }),
 
-      {
-        async serverWillStart() {
-          return {
-            async drainServer() {
-              await serverCleanup.dispose();
-            },
-          };
-        },
-      },
-      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    ],
+    //   {
+    //     async serverWillStart() {
+    //       return {
+    //         async drainServer() {
+    //           await serverCleanup.dispose();
+    //         },
+    //       };
+    //     },
+    //   },
+    //   ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    // ],
   });
 
   await server.start();
 
   server.applyMiddleware({ app });
+  const PORT = 8080;
+  const HOST = "0.0.0.0";
 
-  httpServer.listen({ port: 3000 }, () => {
-    console.log("App is listening on port 3000");
+  app.listen(PORT, HOST, () => {
+    console.log(`Running on http://${HOST}:${PORT}`);
   });
+
   connectToMongo();
 };
 
