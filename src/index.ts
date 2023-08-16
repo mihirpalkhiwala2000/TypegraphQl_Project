@@ -16,6 +16,7 @@ import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import cookieParser from "cookie-parser";
 import { authChecker } from "./authorization";
+import { logger } from "./utils/logger";
 
 const bootstrap = async () => {
   const schema = await buildSchema({
@@ -35,43 +36,40 @@ const bootstrap = async () => {
 
   const server = new ApolloServer({
     schema,
-    // context: ({ req }) => {
-    //   const context = {
-    //     req,
-    //     user: req.body.variables.input,
-    //   };
-    //   return context;
-    // },
-    // introspection: true,
-    // csrfPrevention: true,
-    // cache: "bounded",
-    // plugins: [
-    //   ApolloServerPluginDrainHttpServer({ httpServer }),
+    context: ({ req }) => {
+      const context = {
+        req,
+        user: req.body.variables.input,
+      };
+      return context;
+    },
+    introspection: true,
+    csrfPrevention: true,
+    cache: "bounded",
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
 
-    //   {
-    //     async serverWillStart() {
-    //       return {
-    //         async drainServer() {
-    //           await serverCleanup.dispose();
-    //         },
-    //       };
-    //     },
-    //   },
-    //   ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    // ],
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ],
   });
 
+  await connectToMongo();
   await server.start();
 
   server.applyMiddleware({ app });
-  const PORT = 8080;
-  const HOST = "0.0.0.0";
-
-  app.listen(PORT, HOST, () => {
-    console.log(`Running on http://${HOST}:${PORT}`);
+  const PORT = process.env.PORT;
+  app.listen(PORT, () => {
+    logger.info(`Running on http://localhost:${PORT}s`);
   });
-
-  connectToMongo();
 };
 
 bootstrap();

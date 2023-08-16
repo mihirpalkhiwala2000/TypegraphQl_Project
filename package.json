@@ -5,7 +5,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "tsc -b && nodemon dist/index.js"
+    "build": "tsc -b",
+    "start": "nodemon dist/index.js"
   },
   "dependencies": {
     "@typegoose/typegoose": "^11.4.1",
@@ -33,6 +34,7 @@
     "type-graphql": "^1.1.1",
     "typedi": "^0.10.0",
     "typescript": "^5.1.6",
+    "winston": "^3.10.0",
     "ws": "^8.13.0"
   },
   "devDependencies": {
