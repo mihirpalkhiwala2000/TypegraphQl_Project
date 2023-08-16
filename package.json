@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/index.ts"
+    "start": "tsc -b && nodemon dist/index.js"
   },
   "dependencies": {
     "@typegoose/typegoose": "^11.4.1",
@@ -17,6 +17,7 @@
     "config": "^3.3.9",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "express-jwt": "^8.4.1",
     "graphql": "15.x",
     "graphql-redis-subscriptions": "^2.6.0",
